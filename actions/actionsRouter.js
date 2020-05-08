@@ -29,11 +29,12 @@ router.post('/', validateProjectId, validateBody, (req, res) => {
 });
 
 router.put('/:id', validateProjectId, validateBody, (req, res) => {
-	req.body.project_id = req.projects.id;
-	Actions.insert(req.body)
+	//req.body.project_id = req.projects.id;
+	const { id } = req.params;
+	Actions.update(id, req.body)
 		.then((posted) => {
 			if (posted) {
-				res.status(201).json({ message: 'Created' });
+				res.status(201).json(posted);
 			}
 		})
 		.catch((err) => {
@@ -42,6 +43,32 @@ router.put('/:id', validateProjectId, validateBody, (req, res) => {
 				.json({ message: ' an error occured while making new action' });
 		});
 });
+
+router.delete('/:id', validateProjectId, (req, res) => {
+	Actions.remove(req.params.id)
+		.then(([actions]) => {
+			res.status(200).json(actions);
+		})
+		.catch((err) => {
+			res
+				.status(400)
+				.json({ errorMessage: 'There was a problem deleting actions' });
+		});
+});
+
+function validateUserId(req, res, next) {
+	// do your magic!
+	const { id } = req.params;
+	Actions.getById(id).then((user) => {
+		console.log(id);
+		if (user) {
+			req.id = user;
+			next();
+		} else {
+			res.status(400).json({ errorMessage: 'invalid id' });
+		}
+	});
+}
 
 //custom middleware
 function validateProjectId(req, res, next) {
@@ -59,18 +86,6 @@ function validateProjectId(req, res, next) {
 			res.status(500).json({ message: 'error getting project' });
 		});
 }
-
-// function validateBody(req, res, next) {
-// 	if (!Object.keys(req.body).length === 0) {
-// 		res.status(400).json({ message: 'missing project data' });
-// 	} else if (!req.body.project_id || !req.body.description || !req.body.notes) {
-// 		res
-// 			.status(400)
-// 			.json({ message: 'missing required name and desctiption and notes' });
-// 	} else {
-// 		next();
-// 	}
-// }
 
 function validateBody(req, res, next) {
 	if (!req.body) {
