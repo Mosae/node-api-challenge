@@ -1,12 +1,20 @@
 const express = require('express');
 const Projects = require('../data/helpers/projectModel');
-//const Projects = require('../data/seeds/01-projects');
 const Actions = require('../data/helpers/actionModel');
 const router = express.Router();
 
 //GET
 router.get('/', (req, res) => {
 	Projects.get()
+		.then((project) => {
+			res.status(200).json(project);
+		})
+		.catch((error) => {
+			res.status(500).json({ errorMessage: 'Error getting projects' });
+		});
+});
+router.get('/:id', (req, res) => {
+	Projects.getProjectActions(req.params.id)
 		.then((project) => {
 			res.status(200).json(project);
 		})

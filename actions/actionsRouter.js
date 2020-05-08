@@ -14,22 +14,20 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', validateProjectId, validateBody, (req, res) => {
-	//req.body.project_id = req.projects.id;
 	Actions.insert(req.body)
 		.then((posted) => {
 			if (posted) {
-				res.status(201).json({ message: 'Created' });
+				res.status(201).json({ message: 'Action Created' });
 			}
 		})
 		.catch((err) => {
 			res
 				.status(500)
-				.json({ message: ' an error occured while making new action' });
+				.json({ message: 'an error occured while making new action' });
 		});
 });
 
 router.put('/:id', validateProjectId, validateBody, (req, res) => {
-	//req.body.project_id = req.projects.id;
 	const { id } = req.params;
 	Actions.update(id, req.body)
 		.then((posted) => {
@@ -46,7 +44,7 @@ router.put('/:id', validateProjectId, validateBody, (req, res) => {
 
 router.delete('/:id', validateProjectId, (req, res) => {
 	Actions.remove(req.params.id)
-		.then(([actions]) => {
+		.then((actions) => {
 			res.status(200).json(actions);
 		})
 		.catch((err) => {
@@ -55,20 +53,6 @@ router.delete('/:id', validateProjectId, (req, res) => {
 				.json({ errorMessage: 'There was a problem deleting actions' });
 		});
 });
-
-function validateUserId(req, res, next) {
-	// do your magic!
-	const { id } = req.params;
-	Actions.getById(id).then((user) => {
-		console.log(id);
-		if (user) {
-			req.id = user;
-			next();
-		} else {
-			res.status(400).json({ errorMessage: 'invalid id' });
-		}
-	});
-}
 
 //custom middleware
 function validateProjectId(req, res, next) {
