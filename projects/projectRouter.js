@@ -35,7 +35,22 @@ router.post('/', (req, res) => {
 	}
 });
 
-//router.put('/:id')
+router.put('/:id', (req, res) => {
+	const changes = req.body;
+	Projects.update(req.params.id, changes)
+		.then((project) => {
+			if (project) {
+				res.status(200).json(project);
+			} else {
+				res.stutus(400).json({ error: 'Project cant be found' });
+			}
+		})
+		.catch((error) => {
+			res
+				.status(404)
+				.json({ errorMessage: 'The project with that ID doesnt exist' });
+		});
+});
 module.exports = router;
 //
 //
