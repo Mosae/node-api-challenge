@@ -1,8 +1,8 @@
 const express = require('express');
 const server = express();
 
-const projectRouter = require('./data/helpers/projectModel');
-const actionRouter = require('./data/helpers/actionModel');
+const projectRouter = require('./projects/projectRouter');
+const actionRouter = require('./actions/actionsRouter');
 
 server.get('/', (req, res) => {
 	res.send(`<h2>Sprint Challenge!</h2>`);
