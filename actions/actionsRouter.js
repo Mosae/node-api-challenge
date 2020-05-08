@@ -13,11 +13,28 @@ router.get('/', (req, res) => {
 		});
 });
 
-router.post('/:id', validateProjectId, validateProject, (req, res) => {
-	req.body.project_id = req.projects.id;
-	Projects.insert(req.body)
+router.post('/', validateProjectId, validateBody, (req, res) => {
+	//req.body.project_id = req.projects.id;
+	Actions.insert(req.body)
 		.then((posted) => {
-			res.status(201).json({ message: 'Created' });
+			if (posted) {
+				res.status(201).json({ message: 'Created' });
+			}
+		})
+		.catch((err) => {
+			res
+				.status(500)
+				.json({ message: ' an error occured while making new action' });
+		});
+});
+
+router.put('/:id', validateProjectId, validateBody, (req, res) => {
+	req.body.project_id = req.projects.id;
+	Actions.insert(req.body)
+		.then((posted) => {
+			if (posted) {
+				res.status(201).json({ message: 'Created' });
+			}
 		})
 		.catch((err) => {
 			res
@@ -29,26 +46,49 @@ router.post('/:id', validateProjectId, validateProject, (req, res) => {
 //custom middleware
 function validateProjectId(req, res, next) {
 	const { id } = req.params;
-	Projects.getProjectActions(id).then((user) => {
-		if (user) {
-			req.user = user;
-			next();
-		} else {
-			res.status(400).json({ errorMessage: 'invalid id' });
-		}
-	});
+	Projects.get(req.body.project_id)
+		.then((data) => {
+			if (data) {
+				req.project = data;
+				next();
+			} else {
+				res.status(400).json({ errorMessage: 'invalid id' });
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ message: 'error getting project' });
+		});
 }
 
-function validateProject(req, res, next) {
-	if (!Object.keys(req.body).length === 0) {
-		res.status(400).json({ message: 'missing project data' });
-	} else if (!req.body.project_id || !req.body.description || !req.body.notes) {
-		res
-			.status(400)
-			.json({ message: 'missing required name and desctiption and notes' });
-	} else {
-		next();
+// function validateBody(req, res, next) {
+// 	if (!Object.keys(req.body).length === 0) {
+// 		res.status(400).json({ message: 'missing project data' });
+// 	} else if (!req.body.project_id || !req.body.description || !req.body.notes) {
+// 		res
+// 			.status(400)
+// 			.json({ message: 'missing required name and desctiption and notes' });
+// 	} else {
+// 		next();
+// 	}
+// }
+
+function validateBody(req, res, next) {
+	if (!req.body) {
+		res.status(400).json({ message: 'missing data' });
+		return true;
 	}
+	if (!req.body.notes || !req.body.description) {
+		res.status(400).json({ message: 'missing required field' });
+		return true;
+	}
+	if (req.body.description.length > 128) {
+		res.status(400).json({ message: 'description is too long' });
+		return true;
+	}
+	if (req.body.completed !== undefined) {
+		req.body.completed = !!Number(req.body.completed);
+	}
+	next();
 }
 
 module.exports = router;
