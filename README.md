@@ -40,13 +40,19 @@ Demonstrate your understanding of this Sprint's concepts by answering the follow
 
 - [ ] Mention two parts of Express that you learned about this week.
 
+Express is a built in Middleware that is an array of functions. If needed it can perform certain actions like change requests or responds. Express makes it easier to write API servers because of the built in functionality
+
 - [ ] Describe Middleware?
+      Functions that have access to requests and response. They can decide what the next action should be based on the results they get from requests and responses.
 
 - [ ] Describe a Resource?
+      Resources are a list or collection of data used in the database. We use these to meet our CRUD operations
 
 - [ ] What can the API return to help clients know if a request was successful?
+      A response - message - and the requested data
 
 - [ ] How can we partition our application into sub-applications?
+      By creating folders and separating code into different files for different actions. This will make debugging easier and scaling the application easier too.
 
 ## Minimum Viable Product
 
