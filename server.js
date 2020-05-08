@@ -4,6 +4,7 @@ const server = express();
 const projectRouter = require('./projects/projectRouter');
 const actionRouter = require('./actions/actionsRouter');
 
+server.use(express.json());
 server.get('/', (req, res) => {
 	res.send(`<h2>Sprint Challenge!</h2>`);
 });
